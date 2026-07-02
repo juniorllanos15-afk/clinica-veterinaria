@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\{Pago, Usuario, MetodoPago, Inscripcion};
+use App\Models\Pago;
+use App\Models\Consulta;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -9,95 +10,74 @@ class PagoController extends Controller
 {
     public function index()
     {
-        $pagos = Pago::with(['alumno', 'metodoPago', 'inscripcion.edicion.curso'])
-            ->latest('fecha')
-            ->paginate(20);
+        $pagos = Pago::with('consulta.mascota', 'consulta.veterinario')->paginate(15);
         return Inertia::render('Admin/Pagos/Index', compact('pagos'));
     }
 
     public function create()
     {
-        $inscripciones = Inscripcion::with(['alumno', 'edicion.curso', 'planPago'])
-            ->whereIn('estado_inscripcion', ['pendiente', 'activa'])
-            ->get()
-            ->map(function($inscripcion) {
-                return [
-                    'id' => $inscripcion->id,
-                    'alumno_nombre' => $inscripcion->alumno->nombre . ' ' . $inscripcion->alumno->apellido,
-                    'curso_nombre' => $inscripcion->edicion->curso->nombre ?? 'Sin curso',
-                    'fecha_inicio' => $inscripcion->edicion ? $inscripcion->edicion->fecha_inicio->format('d/m/Y') : '-',
-                    'fecha_fin' => $inscripcion->edicion ? $inscripcion->edicion->fecha_fin->format('d/m/Y') : '-',
-                    'monto_total' => $inscripcion->monto_total,
-                    'monto_cuota' => $inscripcion->calcularMontoCuota(),
-                    'saldo_pendiente' => $inscripcion->getSaldoPendiente(),
-                ];
-            });
-        
-        $metodosPago = MetodoPago::all();
-        return Inertia::render('Admin/Pagos/Create', compact('inscripciones', 'metodosPago'));
+        $consultas = Consulta::all();
+        return Inertia::render('Admin/Pagos/Create', compact('consultas'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'inscripcion_id' => 'required|exists:inscripcion,id',
-            'metodo_pago_id' => 'required|exists:metodo_pago,id',
-            'fecha' => 'required|date',
-            'monto' => 'required|numeric|min:0',
+            'consulta_id' => 'required|exists:consulta,id|unique:pago,consulta_id',
+            'tipo_pago' => 'required|in:contado,credito',
+            'cantidad_cuotas' => 'required|integer|min:1',
+            'total' => 'required|numeric|min:0',
+            'fecha_pago' => 'required|date',
         ], [
-            'inscripcion_id.required' => 'La inscripción es obligatoria',
-            'inscripcion_id.exists' => 'La inscripción seleccionada no es válida',
-            'metodo_pago_id.required' => 'El método de pago es obligatorio',
-            'metodo_pago_id.exists' => 'El método de pago seleccionado no es válido',
-            'fecha.required' => 'La fecha es obligatoria',
-            'fecha.date' => 'La fecha debe ser válida',
-            'monto.required' => 'El monto es obligatorio',
-            'monto.numeric' => 'El monto debe ser un número válido',
-            'monto.min' => 'El monto debe ser mayor o igual a 0',
+            'consulta_id.required' => 'La consulta es obligatoria',
+            'consulta_id.exists' => 'La consulta seleccionada no es válida',
+            'consulta_id.unique' => 'Esta consulta ya tiene un pago registrado',
+            'tipo_pago.required' => 'El tipo de pago es obligatorio',
+            'tipo_pago.in' => 'El tipo de pago debe ser: contado o crédito',
+            'cantidad_cuotas.required' => 'La cantidad de cuotas es obligatoria',
+            'cantidad_cuotas.integer' => 'La cantidad de cuotas debe ser un número entero',
+            'cantidad_cuotas.min' => 'La cantidad de cuotas debe ser al menos 1',
+            'total.required' => 'El total es obligatorio',
+            'total.numeric' => 'El total debe ser un valor numérico',
+            'total.min' => 'El total debe ser mayor o igual a 0',
+            'fecha_pago.required' => 'La fecha de pago es obligatoria',
+            'fecha_pago.date' => 'La fecha de pago debe ser una fecha válida',
         ]);
 
-        $inscripcion = Inscripcion::findOrFail($validated['inscripcion_id']);
-        $validated['alumno_id'] = $inscripcion->alumno_id;
-
         Pago::create($validated);
-        return redirect()->route('admin.pagos.index')->with('success', 'Pago registrado exitosamente');
+
+        return redirect()->route('admin.pagos.index')->with('success', 'Pago creado exitosamente');
     }
 
     public function edit(Pago $pago)
     {
-        $pago->load(['alumno', 'inscripcion.edicion.curso', 'metodoPago']);
-        
-        $inscripciones = Inscripcion::with(['alumno', 'edicion.curso'])
-            ->get()
-            ->map(function($inscripcion) {
-                return [
-                    'id' => $inscripcion->id,
-                    'alumno_nombre' => $inscripcion->alumno->nombre . ' ' . $inscripcion->alumno->apellido,
-                    'curso_nombre' => $inscripcion->edicion->curso->nombre ?? 'Sin curso',
-                    'fecha_inicio' => $inscripcion->edicion ? $inscripcion->edicion->fecha_inicio->format('d/m/Y') : '-',
-                    'fecha_fin' => $inscripcion->edicion ? $inscripcion->edicion->fecha_fin->format('d/m/Y') : '-',
-                    'monto_total' => $inscripcion->monto_total,
-                ];
-            });
-        
-        $metodosPago = MetodoPago::all();
-        return Inertia::render('Admin/Pagos/Edit', compact('pago', 'inscripciones', 'metodosPago'));
+        $pago->load('consulta');
+        $consultas = Consulta::all();
+        return Inertia::render('Admin/Pagos/Edit', compact('pago', 'consultas'));
     }
 
     public function update(Request $request, Pago $pago)
     {
         $validated = $request->validate([
-            'metodo_pago_id' => 'required|exists:metodo_pago,id',
-            'fecha' => 'required|date',
-            'monto' => 'required|numeric|min:0',
+            'consulta_id' => 'required|exists:consulta,id|unique:pago,consulta_id,' . $pago->id,
+            'tipo_pago' => 'required|in:contado,credito',
+            'cantidad_cuotas' => 'required|integer|min:1',
+            'total' => 'required|numeric|min:0',
+            'fecha_pago' => 'required|date',
         ], [
-            'metodo_pago_id.required' => 'El método de pago es obligatorio',
-            'metodo_pago_id.exists' => 'El método de pago seleccionado no es válido',
-            'fecha.required' => 'La fecha es obligatoria',
-            'fecha.date' => 'La fecha debe ser válida',
-            'monto.required' => 'El monto es obligatorio',
-            'monto.numeric' => 'El monto debe ser un número válido',
-            'monto.min' => 'El monto debe ser mayor o igual a 0',
+            'consulta_id.required' => 'La consulta es obligatoria',
+            'consulta_id.exists' => 'La consulta seleccionada no es válida',
+            'consulta_id.unique' => 'Esta consulta ya tiene un pago registrado',
+            'tipo_pago.required' => 'El tipo de pago es obligatorio',
+            'tipo_pago.in' => 'El tipo de pago debe ser: contado o crédito',
+            'cantidad_cuotas.required' => 'La cantidad de cuotas es obligatoria',
+            'cantidad_cuotas.integer' => 'La cantidad de cuotas debe ser un número entero',
+            'cantidad_cuotas.min' => 'La cantidad de cuotas debe ser al menos 1',
+            'total.required' => 'El total es obligatorio',
+            'total.numeric' => 'El total debe ser un valor numérico',
+            'total.min' => 'El total debe ser mayor o igual a 0',
+            'fecha_pago.required' => 'La fecha de pago es obligatoria',
+            'fecha_pago.date' => 'La fecha de pago debe ser una fecha válida',
         ]);
 
         $pago->update($validated);

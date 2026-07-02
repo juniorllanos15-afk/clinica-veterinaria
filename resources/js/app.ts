@@ -8,7 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { Ziggy } from './ziggy';
 import { useTheme } from './composables/useTheme';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Escuela de Conducción';
+const appName = import.meta.env.VITE_APP_NAME || 'Clínica Veterinaria';
 
 // Inicializar apariencia global (tema base, modo, fuente, contraste)
 const { initAppearance } = useTheme();
@@ -25,8 +25,17 @@ createInertiaApp({
         // Asegurar que las rutas inyectadas por @routes en window.Ziggy se mezclen
         // con la lista estática importada (evita errores cuando el archivo ziggy.js
         // fue generado antes de agregar nuevas rutas en el backend).
-        if (typeof window !== 'undefined' && (window as any).Ziggy && (window as any).Ziggy.routes) {
-            Object.assign(Ziggy.routes, (window as any).Ziggy.routes);
+        if (typeof window !== 'undefined' && (window as any).Ziggy) {
+            const winZiggy = (window as any).Ziggy;
+            if (winZiggy.routes) {
+                Object.assign(Ziggy.routes, winZiggy.routes);
+            }
+            if (winZiggy.url) {
+                Ziggy.url = winZiggy.url;
+            }
+            if (winZiggy.port) {
+                Ziggy.port = winZiggy.port;
+            }
         }
         createApp({ render: () => h(App, props) })
             .use(plugin)

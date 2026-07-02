@@ -22,18 +22,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
-
-# Install dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev || true
-RUN npm install || true
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
 EXPOSE 9000
 
 CMD ["php-fpm"]

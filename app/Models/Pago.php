@@ -5,9 +5,30 @@ use Illuminate\Database\Eloquent\Model;
 class Pago extends Model
 {
     protected $table = 'pago';
-    protected $fillable = ['alumno_id', 'fecha', 'monto', 'metodo_pago_id', 'inscripcion_id'];
-    protected $casts = ['monto' => 'decimal:2'];
-    public function alumno() { return $this->belongsTo(Usuario::class, 'alumno_id'); }
-    public function metodoPago() { return $this->belongsTo(MetodoPago::class, 'metodo_pago_id'); }
-    public function inscripcion() { return $this->belongsTo(Inscripcion::class); }
+    protected $fillable = ['consulta_id', 'tipo_pago', 'cantidad_cuotas', 'total', 'fecha_pago', 'estado'];
+
+    protected $casts = [
+        'total' => 'decimal:2',
+        'fecha_pago' => 'date',
+    ];
+
+    public function consulta()
+    {
+        return $this->belongsTo(Consulta::class, 'consulta_id');
+    }
+
+    public function cuotas()
+    {
+        return $this->hasMany(PagoCuota::class, 'pago_id');
+    }
+
+    public function montoPagado()
+    {
+        return $this->cuotas()->where('estado', 'Pagado')->sum('monto');
+    }
+
+    public function saldoPendiente()
+    {
+        return $this->total - $this->montoPagado();
+    }
 }

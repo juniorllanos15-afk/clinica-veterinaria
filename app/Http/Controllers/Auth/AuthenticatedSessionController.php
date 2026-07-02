@@ -48,8 +48,8 @@ class AuthenticatedSessionController extends Controller
         // Cast a int because match() hace comparación estricta (===) en PHP 8
         $redirectRoute = match((int) $user->rol_id) {
             1 => 'admin.dashboard',
-            2 => 'profesor.dashboard',
-            3 => 'alumno.dashboard',
+            2 => 'veterinario.dashboard',
+            3 => 'cliente.dashboard',
             default => 'admin.dashboard',
         };
         

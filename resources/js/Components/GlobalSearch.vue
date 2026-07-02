@@ -27,7 +27,7 @@
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
         />
       </svg>
-      
+
       <!-- Loading Spinner -->
       <div v-if="loading" class="absolute right-3 top-1/2 -translate-y-1/2">
         <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
       >
         <!-- No Query -->
         <div v-if="query.length === 0" class="p-4 text-center text-theme-tertiary text-sm">
-          Escribe para buscar en TODO el sistema (15 tablas)...
+          Escribe para buscar en TODO el sistema (11 tablas)...
         </div>
 
         <!-- Loading -->
@@ -104,105 +104,172 @@
             </Link>
           </div>
 
-          <!-- Cursos -->
-          <div v-if="results.cursos?.length" class="mb-2">
+          <!-- Mascotas -->
+          <div v-if="results.mascotas?.length" class="mb-2">
             <div class="px-4 py-2 bg-theme-secondary">
               <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                Cursos ({{ results.cursos.length }})
+                Mascotas ({{ results.mascotas.length }})
               </h3>
             </div>
             <Link
-              v-for="(item, index) in results.cursos"
-              :key="`curso-${item.id}`"
-              :href="`/admin/cursos/${item.id}/edit`"
+              v-for="(item, index) in results.mascotas"
+              :key="`mascota-${item.id}`"
+              :href="`/admin/mascotas/${item.id}/edit`"
               @click="closeResults"
               :class="[
                 'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
-                highlightedIndex === getGlobalIndex('cursos', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
+                highlightedIndex === getGlobalIndex('mascotas', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
               ]"
             >
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-theme-primary font-medium truncate">{{ item.nombre }}</p>
-                  <p class="text-theme-tertiary text-sm">{{ item.tipo_curso?.nombre }} • ${{ item.precio }}</p>
+                  <p class="text-theme-tertiary text-sm truncate">{{ item.especie }} • Dueño: {{ item.dueno?.nombre }} {{ item.dueno?.apellido }}</p>
                 </div>
               </div>
             </Link>
           </div>
 
-          <!-- Vehículos -->
-          <div v-if="results.vehiculos?.length" class="mb-2">
+          <!-- Consultas -->
+          <div v-if="results.consultas?.length" class="mb-2">
             <div class="px-4 py-2 bg-theme-secondary">
               <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Vehículos ({{ results.vehiculos.length }})
+                Consultas ({{ results.consultas.length }})
               </h3>
             </div>
             <Link
-              v-for="(item, index) in results.vehiculos"
-              :key="`vehiculo-${item.id}`"
-              :href="`/admin/vehiculos/${item.id}/edit`"
+              v-for="(item, index) in results.consultas"
+              :key="`consulta-${item.id}`"
+              :href="`/admin/consultas/${item.id}/edit`"
               @click="closeResults"
               :class="[
                 'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
-                highlightedIndex === getGlobalIndex('vehiculos', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
-              ]"
-            >
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-theme-primary font-medium truncate">{{ item.placa }} - {{ item.marca }} {{ item.modelo }}</p>
-                  <p class="text-theme-tertiary text-sm">{{ item.tipo_vehiculo?.nombre }} • Año {{ item.anio }}</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-          <!-- Inscripciones -->
-          <div v-if="results.inscripciones?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                Inscripciones ({{ results.inscripciones.length }})
-              </h3>
-            </div>
-            <Link
-              v-for="(item, index) in results.inscripciones"
-              :key="`inscripcion-${item.id}`"
-              :href="`/admin/inscripciones/${item.id}`"
-              @click="closeResults"
-              :class="[
-                'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
-                highlightedIndex === getGlobalIndex('inscripciones', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
+                highlightedIndex === getGlobalIndex('consultas', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
               ]"
             >
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
                   <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-theme-primary font-medium truncate">
-                    {{ item.usuario?.nombre }} {{ item.usuario?.apellido }} - {{ item.curso_edicion?.curso?.nombre }}
-                  </p>
-                  <p class="text-theme-tertiary text-sm">{{ item.estado_inscripcion }}</p>
+                  <p class="text-theme-primary font-medium truncate">{{ item.motivo }}</p>
+                  <p class="text-theme-tertiary text-sm truncate">{{ item.mascota?.nombre }} • {{ formatDate(item.fecha) }}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <!-- Servicios -->
+          <div v-if="results.servicios?.length" class="mb-2">
+            <div class="px-4 py-2 bg-theme-secondary">
+              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Servicios ({{ results.servicios.length }})
+              </h3>
+            </div>
+            <Link
+              v-for="(item, index) in results.servicios"
+              :key="`servicio-${item.id}`"
+              :href="`/admin/servicios/${item.id}/edit`"
+              @click="closeResults"
+              :class="[
+                'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
+                highlightedIndex === getGlobalIndex('servicios', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
+              ]"
+            >
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-theme-primary font-medium truncate">{{ item.nombre }}</p>
+                  <p class="text-theme-tertiary text-sm truncate">{{ item.categoria?.nombre || 'General' }} • Bs. {{ item.precio }}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <!-- Productos -->
+          <div v-if="results.productos?.length" class="mb-2">
+            <div class="px-4 py-2 bg-theme-secondary">
+              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Productos ({{ results.productos.length }})
+              </h3>
+            </div>
+            <Link
+              v-for="(item, index) in results.productos"
+              :key="`producto-${item.id}`"
+              :href="`/admin/productos/${item.id}/edit`"
+              @click="closeResults"
+              :class="[
+                'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
+                highlightedIndex === getGlobalIndex('productos', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
+              ]"
+            >
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-theme-primary font-medium truncate">{{ item.nombre }}</p>
+                  <p class="text-theme-tertiary text-sm">${{ item.precio }} • Stock: {{ item.stock }}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <!-- Categorías -->
+          <div v-if="results.categorias?.length" class="mb-2">
+            <div class="px-4 py-2 bg-theme-secondary">
+              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                Categorías ({{ results.categorias.length }})
+              </h3>
+            </div>
+            <Link
+              v-for="(item, index) in results.categorias"
+              :key="`categoria-${item.id}`"
+              :href="`/admin/categorias/${item.id}/edit`"
+              @click="closeResults"
+              :class="[
+                'block px-4 py-3 hover:bg-theme-hover transition-colors cursor-pointer border-l-4',
+                highlightedIndex === getGlobalIndex('categorias', index) ? 'bg-theme-hover border-blue-500' : 'border-transparent'
+              ]"
+            >
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-theme-primary font-medium truncate">{{ item.nombre }}</p>
                 </div>
               </div>
             </Link>
@@ -234,62 +301,11 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-theme-primary font-medium truncate">
-                    Pago #{{ item.id }} - ${{ item.monto }}
+                    Consulta #{{ item.consulta?.id || item.consulta_id }} - Total: ${{ item.total }}
                   </p>
-                  <p class="text-theme-tertiary text-sm">{{ item.metodo_pago?.nombre }} • {{ formatDate(item.fecha) }}</p>
+                  <p class="text-theme-tertiary text-sm">Estado: {{ item.estado }}</p>
                 </div>
               </div>
-            </Link>
-          </div>
-
-          <!-- Ediciones de Cursos -->
-          <div v-if="results.curso_ediciones?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Ediciones de Cursos ({{ results.curso_ediciones.length }})</h3>
-            </div>
-            <Link v-for="item in results.curso_ediciones" :key="`edicion-${item.id}`" :href="`/admin/curso-ediciones/${item.id}/edit`" @click="closeResults" class="block px-4 py-3 hover:bg-theme-hover transition-colors">
-              <p class="text-theme-primary font-medium">{{ item.curso?.nombre }} - Edición #{{ item.id }}</p>
-              <p class="text-theme-tertiary text-sm">Cupo: {{ item.cupo_maximo }}</p>
-            </Link>
-          </div>
-
-          <!-- Tipos de Curso -->
-          <div v-if="results.tipos_curso?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Tipos de Curso ({{ results.tipos_curso.length }})</h3>
-            </div>
-            <Link v-for="item in results.tipos_curso" :key="`tipo-curso-${item.id}`" :href="`/admin/tipos-curso/${item.id}/edit`" @click="closeResults" class="block px-4 py-3 hover:bg-theme-hover">
-              <p class="text-theme-primary font-medium">{{ item.nombre }}</p>
-            </Link>
-          </div>
-
-          <!-- Tipos de Vehículo -->
-          <div v-if="results.tipos_vehiculo?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Tipos de Vehículo ({{ results.tipos_vehiculo.length }})</h3>
-            </div>
-            <Link v-for="item in results.tipos_vehiculo" :key="`tipo-vehiculo-${item.id}`" :href="`/admin/tipos-vehiculo/${item.id}/edit`" @click="closeResults" class="block px-4 py-3 hover:bg-theme-hover">
-              <p class="text-theme-primary font-medium">{{ item.nombre }}</p>
-            </Link>
-          </div>
-
-          <!-- Métodos de Pago -->
-          <div v-if="results.metodos_pago?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Métodos de Pago ({{ results.metodos_pago.length }})</h3>
-            </div>
-            <Link v-for="item in results.metodos_pago" :key="`metodo-${item.id}`" :href="`/admin/metodos-pago/${item.id}/edit`" @click="closeResults" class="block px-4 py-3 hover:bg-theme-hover">
-              <p class="text-theme-primary font-medium">{{ item.nombre }}</p>
-            </Link>
-          </div>
-
-          <!-- Planes de Pago -->
-          <div v-if="results.planes_pago?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Planes de Pago ({{ results.planes_pago.length }})</h3>
-            </div>
-            <Link v-for="item in results.planes_pago" :key="`plan-${item.id}`" :href="`/admin/planes-pago/${item.id}/edit`" @click="closeResults" class="block px-4 py-3 hover:bg-theme-hover">
-              <p class="text-theme-primary font-medium">{{ item.nombre }} - {{ item.numero_cuotas }} cuotas</p>
             </Link>
           </div>
 
@@ -312,17 +328,6 @@
               <p class="text-theme-primary font-medium">{{ item.nombre }} - {{ item.ruta }}</p>
               <p class="text-theme-tertiary text-sm">Rol: {{ item.rol?.nombre || 'Todos' }}</p>
             </Link>
-          </div>
-
-          <!-- Horarios -->
-          <div v-if="results.horarios?.length" class="mb-2">
-            <div class="px-4 py-2 bg-theme-secondary">
-              <h3 class="text-xs font-semibold text-theme-secondary uppercase tracking-wider">Horarios ({{ results.horarios.length }})</h3>
-            </div>
-            <div v-for="item in results.horarios" :key="`horario-${item.id}`" class="px-4 py-3 hover:bg-theme-hover">
-              <p class="text-theme-primary font-medium">{{ item.curso_edicion?.curso?.nombre }}</p>
-              <p class="text-theme-tertiary text-sm">{{ item.dia_semana }} {{ item.hora_inicio }}-{{ item.hora_fin }}</p>
-            </div>
           </div>
 
           <!-- Eventos -->
@@ -382,7 +387,7 @@ const totalResults = computed(() => {
 
 const handleSearch = () => {
   clearTimeout(searchTimeout);
-  
+
   if (query.value.length < 2) {
     results.value = {};
     return;
@@ -403,7 +408,7 @@ const handleSearch = () => {
     } finally {
       loading.value = false;
     }
-  }, 300); // Debounce 300ms
+  }, 300);
 };
 
 const closeResults = () => {
@@ -412,9 +417,9 @@ const closeResults = () => {
 };
 
 const getGlobalIndex = (category, localIndex) => {
-  const categories = ['usuarios', 'cursos', 'vehiculos', 'inscripciones', 'pagos'];
+  const categories = ['usuarios', 'mascotas', 'consultas', 'servicios', 'productos', 'categorias', 'pagos'];
   let globalIndex = 0;
-  
+
   for (const cat of categories) {
     if (cat === category) {
       return globalIndex + localIndex;
@@ -439,35 +444,41 @@ const highlightPrevious = () => {
 
 const selectHighlighted = () => {
   if (highlightedIndex.value < 0) return;
-  
+
   let currentIndex = 0;
-  const categories = ['usuarios', 'cursos', 'vehiculos', 'inscripciones', 'pagos'];
-  
+  const categories = ['usuarios', 'mascotas', 'consultas', 'servicios', 'productos', 'categorias', 'pagos'];
+
   for (const category of categories) {
     const items = results.value[category] || [];
     if (currentIndex + items.length > highlightedIndex.value) {
       const localIndex = highlightedIndex.value - currentIndex;
       const item = items[localIndex];
       let url = '';
-      
+
       switch(category) {
         case 'usuarios':
           url = `/admin/usuarios/${item.id}/edit`;
           break;
-        case 'cursos':
-          url = `/admin/cursos/${item.id}/edit`;
+        case 'mascotas':
+          url = `/admin/mascotas/${item.id}/edit`;
           break;
-        case 'vehiculos':
-          url = `/admin/vehiculos/${item.id}/edit`;
+        case 'consultas':
+          url = `/admin/consultas/${item.id}/edit`;
           break;
-        case 'inscripciones':
-          url = `/admin/inscripciones/${item.id}`;
+        case 'servicios':
+          url = `/admin/servicios/${item.id}/edit`;
+          break;
+        case 'productos':
+          url = `/admin/productos/${item.id}/edit`;
+          break;
+        case 'categorias':
+          url = `/admin/categorias/${item.id}/edit`;
           break;
         case 'pagos':
           url = `/admin/pagos/${item.id}`;
           break;
       }
-      
+
       if (url) {
         window.location.href = url;
       }

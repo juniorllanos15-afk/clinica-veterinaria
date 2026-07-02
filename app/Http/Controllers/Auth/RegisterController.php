@@ -52,14 +52,14 @@ class RegisterController extends Controller
             'password.confirmed' => 'Las contraseñas no coinciden',
         ]);
 
-        // Buscar el rol de alumno (asumiendo que existe en la base de datos)
-        $rolAlumno = Rol::where('nombre', 'alumno')->first();
+        // Buscar el rol de cliente
+        $rolCliente = Rol::where('nombre', 'cliente')->first();
 
-        if (!$rolAlumno) {
+        if (!$rolCliente) {
             return back()->withErrors(['error' => 'Error en la configuración del sistema. Contacte al administrador.']);
         }
 
-        // Crear el usuario con rol de alumno
+        // Crear el usuario con rol de cliente
         $usuario = Usuario::create([
             'nombre' => $validated['nombre'],
             'apellido' => $validated['apellido'],
@@ -69,16 +69,14 @@ class RegisterController extends Controller
             'fecha_nacimiento' => $validated['fecha_nacimiento'],
             'genero' => $validated['genero'],
             'telefono' => $validated['telefono'] ?? null,
-            'direccion' => null, // Opcional, se puede agregar después
+            'direccion' => null,
             'contrasena' => Hash::make($validated['password']),
-            'rol_id' => $rolAlumno->id,
+            'rol_id' => $rolCliente->id,
             'estado_usuario' => 'activo',
         ]);
 
-        // Autenticar automáticamente al usuario
         Auth::login($usuario);
 
-        // Redirigir al dashboard del alumno
-        return redirect()->route('alumno.dashboard');
+        return redirect()->route('cliente.dashboard');
     }
 }

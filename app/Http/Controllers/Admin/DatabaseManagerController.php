@@ -13,39 +13,38 @@ class DatabaseManagerController extends Controller
         $stats = [
             'roles' => DB::table('rol')->count(),
             'usuarios' => DB::table('usuario')->count(),
-            'vehiculos' => DB::table('vehiculo')->count(),
-            'tipos_vehiculo' => DB::table('tipo_vehiculo')->count(),
-            'tipos_curso' => DB::table('tipo_curso')->count(),
-            'cursos' => DB::table('curso')->count(),
-            'ediciones' => DB::table('curso_edicion')->count(),
-            'horarios' => DB::table('curso_horario')->count(),
-            'inscripciones' => DB::table('inscripcion')->count(),
+            'categorias' => DB::table('categoria')->count(),
+            'servicios' => DB::table('servicio')->count(),
+            'productos' => DB::table('producto')->count(),
+            'mascotas' => DB::table('mascota')->count(),
+            'consultas' => DB::table('consulta')->count(),
+            'consulta_servicios' => DB::table('consulta_servicio')->count(),
+            'consulta_productos' => DB::table('consulta_producto')->count(),
             'pagos' => DB::table('pago')->count(),
-            'planes_pago' => DB::table('plan_pago')->count(),
-            'metodos_pago' => DB::table('metodo_pago')->count(),
+            'pago_cuotas' => DB::table('pago_cuota')->count(),
             'menus' => DB::table('menu')->count(),
             'visitas' => DB::table('visita_pagina')->count(),
             'eventos' => DB::table('registro_evento')->count(),
         ];
-        
+
         $testUsers = [
             'admin' => [
-                'email' => 'admin@escuela.com',
+                'email' => 'admin@veterinaria.com',
                 'password' => 'password',
-                'exists' => DB::table('usuario')->where('email', 'admin@escuela.com')->exists()
+                'exists' => DB::table('usuario')->where('email', 'admin@veterinaria.com')->exists()
             ],
-            'profesor' => [
-                'email' => 'profesor@escuela.com',
+            'veterinario' => [
+                'email' => 'veterinario@veterinaria.com',
                 'password' => 'password',
-                'exists' => DB::table('usuario')->where('email', 'profesor@escuela.com')->exists()
+                'exists' => DB::table('usuario')->where('email', 'veterinario@veterinaria.com')->exists()
             ],
-            'alumno' => [
-                'email' => 'alumno@escuela.com',
+            'cliente' => [
+                'email' => 'cliente@veterinaria.com',
                 'password' => 'password',
-                'exists' => DB::table('usuario')->where('email', 'alumno@escuela.com')->exists()
+                'exists' => DB::table('usuario')->where('email', 'cliente@veterinaria.com')->exists()
             ]
         ];
-        
+
         return Inertia::render('Admin/DatabaseManager/Index', compact('stats', 'testUsers'));
     }
 
@@ -53,35 +52,31 @@ class DatabaseManagerController extends Controller
     {
         try {
             DB::beginTransaction();
-            
-            // Orden de limpieza respetando FKs: de hijos a padres
-            // Solo limpiamos tablas de datos variables, preservando configuración
+
             $tables = [
-                'pago',                 // depende de inscripcion
-                'inscripcion',          // depende de curso_edicion
-                'curso_horario',        // depende de curso_edicion
-                'curso_edicion',        // depende de curso
-                'curso',                // depende de tipo_curso
-                'vehiculo',             // depende de tipo_vehiculo
-                'visita_pagina',        // independiente
-                'registro_evento'       // independiente
+                'pago_cuota',           // depende de pago
+                'consulta_producto',     // depende de consulta, producto
+                'consulta_servicio',     // depende de consulta, servicio
+                'pago',                  // depende de consulta
+                'consulta',              // depende de mascota
+                'mascota',               // depende de usuario
+                'visita_pagina',         // independiente
+                'registro_evento'        // independiente
             ];
-            
+
             foreach ($tables as $table) {
                 DB::statement("TRUNCATE TABLE {$table} RESTART IDENTITY CASCADE");
             }
-            
-            // Limpiar usuarios excepto los 3 de prueba y los 2 adicionales
+
+            // Limpiar usuarios excepto los 3 de prueba
             DB::table('usuario')
                 ->whereNotIn('email', [
-                    'admin@escuela.com',
-                    'profesor@escuela.com',
-                    'alumno@escuela.com',
-                    'maria.lopez@escuela.com',
-                    'ana.perez@escuela.com'
+                    'admin@veterinaria.com',
+                    'veterinario@veterinaria.com',
+                    'cliente@veterinaria.com'
                 ])
                 ->delete();
-            
+
             DB::commit();
             return back()->with('success', 'Datos variables limpiados. Configuración base y usuarios de prueba preservados.');
         } catch (\Exception $e) {
@@ -93,12 +88,8 @@ class DatabaseManagerController extends Controller
     public function seed()
     {
         try {
-            // Primero ejecutar DatabaseSeeder (usuarios, tipos, planes, menús)
             Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DatabaseSeeder']);
-            
-            // Luego DemoDataSeeder (cursos, ediciones, horarios, inscripciones, pagos)
-            Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DemoDataSeeder']);
-            
+
             return back()->with('success', 'Datos de demostración insertados exitosamente');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al poblar BD: ' . $e->getMessage());
@@ -109,35 +100,32 @@ class DatabaseManagerController extends Controller
     {
         try {
             DB::beginTransaction();
-            
-            // Truncar todas las tablas en orden (de hijos a padres)
+
             $tables = [
+                'pago_cuota',
+                'consulta_producto',
+                'consulta_servicio',
                 'pago',
-                'inscripcion',
-                'curso_horario',
-                'curso_edicion',
-                'curso',
-                'vehiculo',
+                'consulta',
+                'mascota',
                 'usuario',
-                'tipo_vehiculo',
-                'tipo_curso',
-                'plan_pago',
-                'metodo_pago',
+                'servicio',
+                'producto',
+                'categoria',
+                'rol',
                 'menu',
                 'visita_pagina',
                 'registro_evento'
             ];
-            
+
             foreach ($tables as $table) {
                 DB::statement("TRUNCATE TABLE {$table} RESTART IDENTITY CASCADE");
             }
-            
+
             DB::commit();
-            
-            // Poblar con seeders
+
             Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DatabaseSeeder']);
-            Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DemoDataSeeder']);
-            
+
             return back()->with('success', 'Base de datos reseteada y poblada exitosamente');
         } catch (\Exception $e) {
             DB::rollBack();

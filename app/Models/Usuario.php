@@ -11,7 +11,5 @@ class Usuario extends Authenticatable
     protected $hidden = ['contrasena', 'remember_token'];
     public function getAuthPassword() { return $this->contrasena; }
     public function rol() { return $this->belongsTo(Rol::class); }
-    public function cursosComoInstructor() { return $this->hasMany(Curso::class, 'instructor_id'); }
-    public function inscripciones() { return $this->hasMany(Inscripcion::class, 'alumno_id'); }
-    public function pagos() { return $this->hasMany(Pago::class, 'alumno_id'); }
+    public function mascotas() { return $this->hasMany(Mascota::class, 'dueno_id'); }
 }

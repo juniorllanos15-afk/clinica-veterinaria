@@ -123,9 +123,9 @@ const quickLogin = (email: string) => {
           <div class="mt-8 border-t border-theme pt-6">
             <p class="text-xs text-theme-secondary text-center mb-4">Usuarios de prueba:</p>
             <div class="grid grid-cols-3 gap-2 text-xs">
-              <button @click="quickLogin('admin@escuela.com')" type="button" class="px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors font-medium">Admin</button>
-              <button @click="quickLogin('profesor@escuela.com')" type="button" class="px-3 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors font-medium">Profesor</button>
-              <button @click="quickLogin('alumno@escuela.com')" type="button" class="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium">Alumno</button>
+              <button @click="quickLogin('admin@veterinaria.com')" type="button" class="px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors font-medium">Admin</button>
+              <button @click="quickLogin('veterinario@veterinaria.com')" type="button" class="px-3 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors font-medium">Veterinario</button>
+              <button @click="quickLogin('cliente@veterinaria.com')" type="button" class="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium">Cliente</button>
             </div>
             <p class="text-xs text-theme-tertiary text-center mt-2">Contraseña: password</p>
           </div>

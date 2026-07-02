@@ -39,8 +39,8 @@ class LoginController extends Controller
 
             $redirectRoute = match((int) ($user->rol_id ?? 0)) {
                 1 => 'admin.dashboard',
-                2 => 'profesor.dashboard',
-                3 => 'alumno.dashboard',
+                2 => 'veterinario.dashboard',
+                3 => 'cliente.dashboard',
                 default => 'admin.dashboard',
             };
 

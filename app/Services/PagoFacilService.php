@@ -87,12 +87,12 @@ class PagoFacilService
                 'paymentNumber' => $paymentNumber,
                 'amount' => $amount,
                 'currency' => 2, // BOB
-                'clientCode' => 'ACB01',
+                'clientCode' => 'VET01',
                 'callbackUrl' => $this->callbackUrl,
                 'orderDetail' => [
                     [
                         'serial' => 1,
-                        'product' => 'Pago Inscripción Escuela de Conducción ACB',
+                        'product' => 'Pago Consulta Veterinaria',
                         'quantity' => 1,
                         'price' => $amount,
                         'discount' => 0,

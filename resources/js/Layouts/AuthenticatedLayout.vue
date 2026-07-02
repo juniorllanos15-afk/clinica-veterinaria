@@ -12,10 +12,10 @@
         <Link href="/admin/dashboard" class="flex items-center gap-3">
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </div>
-          <span v-if="!sidebarCollapsed" class="font-bold text-lg sidebar-text">Escuela</span>
+          <span v-if="!sidebarCollapsed" class="font-bold text-lg sidebar-text">Veterinaria</span>
         </Link>
         <button
           @click="sidebarCollapsed = !sidebarCollapsed"
@@ -131,7 +131,7 @@
       <footer class="footer-bg border-t footer-border py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
           <div class="text-sm text-theme-secondary">
-            © {{ new Date().getFullYear() }} Escuela de Conducción. Todos los derechos reservados.
+            © {{ new Date().getFullYear() }} Clínica Veterinaria. Todos los derechos reservados.
           </div>
           <div class="flex items-center gap-2 text-sm text-theme-secondary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,13 +180,14 @@ const pageTitle = computed(() => {
   const url = page.url;
   if (url.includes('/dashboard')) return 'Dashboard';
   if (url.includes('/usuarios')) return 'Usuarios';
-  if (url.includes('/curso-ediciones')) return 'Ediciones de Cursos';
-  if (url.includes('/cursos')) return 'Cursos';
-  if (url.includes('/alumnos')) return 'Alumnos';
-  if (url.includes('/horarios')) return 'Horarios';
-  if (url.includes('/vehiculos')) return 'Vehículos';
-  if (url.includes('/inscripciones')) return 'Inscripciones';
+  if (url.includes('/mascotas')) return 'Mascotas';
+  if (url.includes('/consultas')) return 'Consultas';
+  if (url.includes('/categorias')) return 'Categorías';
+  if (url.includes('/servicios')) return 'Servicios';
+  if (url.includes('/productos')) return 'Productos';
   if (url.includes('/pagos')) return 'Pagos';
+  if (url.includes('/historial')) return 'Historial Clínico';
+  if (url.includes('/reportes')) return 'Reportes';
   if (url.includes('/database')) return 'Administrador BD';
   return 'Sistema';
 });

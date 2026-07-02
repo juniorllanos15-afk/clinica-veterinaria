@@ -71,14 +71,14 @@ const submit = () => {
       <div class="max-w-2xl w-full">
         <div class="bg-white rounded-2xl shadow-2xl p-8">
           <div class="text-center mb-8">
-            <div class="w-20 h-20 bg-gradient-to-br from-red-600 to-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
               </svg>
             </div>
-            <h2 class="text-3xl font-bold text-gray-900">Automóvil Club Boliviano</h2>
-            <p class="mt-2 text-lg font-semibold text-red-600">Escuela de Conducción - Santa Cruz</p>
-            <p class="mt-1 text-sm text-gray-600">Regístrate como alumno y comienza tu camino</p>
+            <h2 class="text-3xl font-bold text-gray-900">Clínica Veterinaria</h2>
+            <p class="mt-2 text-lg font-semibold text-green-600">Santa Cruz - Bolivia</p>
+            <p class="mt-1 text-sm text-gray-600">Regístrate como cliente y gestiona la salud de tus mascotas</p>
           </div>
 
           <form @submit.prevent="submit" class="space-y-6">
@@ -225,16 +225,16 @@ const submit = () => {
               </div>
             </div>
 
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p class="text-sm text-red-800">
-                <strong>Importante:</strong> Al registrarte serás creado como alumno en el sistema del Automóvil Club Boliviano. Podrás inscribirte en nuestros cursos de conducción una vez verificada tu cuenta.
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p class="text-sm text-green-800">
+                <strong>Importante:</strong> Al registrarte serás creado como cliente en el sistema de la Clínica Veterinaria. Podrás gestionar la salud de tus mascotas una vez verificada tu cuenta.
               </p>
             </div>
 
             <button 
               type="submit" 
               :disabled="form.processing" 
-              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-yellow-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-teal-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="!form.processing">Crear Cuenta</span>
               <span v-else class="flex items-center">

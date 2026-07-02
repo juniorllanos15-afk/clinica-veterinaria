@@ -60,8 +60,8 @@ defineProps<{
 const getRolVariant = (nombre: string) => {
   const variants = {
     'administrador': 'error',
-    'instructor': 'info',
-    'alumno': 'success'
+    'veterinario': 'info',
+    'cliente': 'success'
   };
   return variants[nombre?.toLowerCase()] || 'neutral';
 };

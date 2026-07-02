@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
-use App\Models\Curso;
-use App\Models\Vehiculo;
-use App\Models\Inscripcion;
+use App\Models\Mascota;
+use App\Models\Consulta;
+use App\Models\Servicio;
+use App\Models\Producto;
+use App\Models\Categoria;
 use App\Models\Pago;
-use App\Models\CursoEdicion;
-use App\Models\CursoHorario;
-use App\Models\MetodoPago;
-use App\Models\PlanPago;
-use App\Models\TipoCurso;
-use App\Models\TipoVehiculo;
 use App\Models\Rol;
 use App\Models\Menu;
 use App\Models\RegistroEvento;
@@ -22,33 +18,22 @@ use Illuminate\Support\Facades\Log;
 
 class GlobalSearchController extends Controller
 {
-    /**
-     * Buscar en TODAS las tablas del sistema
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function search(Request $request)
     {
         try {
             $query = $request->input('q', '');
 
-            // Validar que haya al menos 2 caracteres
             if (strlen($query) < 2) {
                 return response()->json([
                     'usuarios' => [],
-                    'cursos' => [],
-                    'curso_ediciones' => [],
-                    'vehiculos' => [],
-                    'inscripciones' => [],
+                    'mascotas' => [],
+                    'consultas' => [],
+                    'servicios' => [],
+                    'productos' => [],
+                    'categorias' => [],
                     'pagos' => [],
-                    'tipos_curso' => [],
-                    'tipos_vehiculo' => [],
-                    'metodos_pago' => [],
-                    'planes_pago' => [],
                     'roles' => [],
                     'menus' => [],
-                    'horarios' => [],
                     'eventos' => [],
                     'visitas' => []
                 ]);
@@ -63,15 +48,45 @@ class GlobalSearchController extends Controller
                       ->orWhere('apellido', 'like', $searchTerm)
                       ->orWhere('email', 'like', $searchTerm)
                       ->orWhere('telefono', 'like', $searchTerm)
-                      ->orWhere('numero_documento', 'like', $searchTerm)
-                      ->orWhere('direccion', 'like', $searchTerm);
+                      ->orWhere('numero_documento', 'like', $searchTerm);
                 })
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get();
 
-            // 2. Cursos
-            $cursos = Curso::with('tipoCurso')
+            // 2. Mascotas
+            $mascotas = Mascota::with('dueno')
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('nombre', 'like', $searchTerm)
+                      ->orWhere('especie', 'like', $searchTerm)
+                      ->orWhere('raza', 'like', $searchTerm);
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // 3. Consultas
+            $consultas = Consulta::with('mascota', 'veterinario')
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('motivo_consulta', 'like', $searchTerm)
+                      ->orWhere('diagnostico', 'like', $searchTerm)
+                      ->orWhere('estado', 'like', $searchTerm);
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // 4. Servicios
+            $servicios = Servicio::where(function ($q) use ($searchTerm) {
+                    $q->where('nombre', 'like', $searchTerm)
+                      ->orWhere('descripcion', 'like', $searchTerm);
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // 5. Productos
+            $productos = Producto::with('categoria')
                 ->where(function ($q) use ($searchTerm) {
                     $q->where('nombre', 'like', $searchTerm)
                       ->orWhere('descripcion', 'like', $searchTerm);
@@ -80,117 +95,49 @@ class GlobalSearchController extends Controller
                 ->limit(5)
                 ->get();
 
-            // 3. Ediciones de Cursos
-            $curso_ediciones = CursoEdicion::with(['curso'])
-                ->whereHas('curso', function ($q) use ($searchTerm) {
-                    $q->where('nombre', 'like', $searchTerm);
-                })
-                ->orderBy('created_at', 'desc')
+            // 6. Categorias
+            $categorias = Categoria::where('nombre', 'like', $searchTerm)
+                ->orderBy('nombre')
                 ->limit(5)
                 ->get();
 
-            // 4. Vehículos
-            $vehiculos = Vehiculo::with('tipoVehiculo')
+            // 7. Pagos
+            $pagos = Pago::with('consulta.mascota')
                 ->where(function ($q) use ($searchTerm) {
-                    $q->where('placa', 'like', $searchTerm)
-                      ->orWhere('marca', 'like', $searchTerm)
-                      ->orWhere('modelo', 'like', $searchTerm)
-                      ->orWhere('anio', 'like', $searchTerm);
+                    $q->where('estado', 'like', $searchTerm)
+                      ->orWhere('tipo_pago', 'like', $searchTerm);
                 })
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get();
 
-            // 5. Inscripciones
-            $inscripciones = Inscripcion::with(['usuario', 'cursoEdicion.curso'])
-                ->whereHas('usuario', function ($q) use ($searchTerm) {
-                    $q->where('nombre', 'like', $searchTerm)
-                      ->orWhere('apellido', 'like', $searchTerm)
-                      ->orWhere('email', 'like', $searchTerm);
-                })
-                ->orWhereHas('cursoEdicion.curso', function ($q) use ($searchTerm) {
-                    $q->where('nombre', 'like', $searchTerm);
-                })
-                ->orWhere('estado_inscripcion', 'like', $searchTerm)
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get();
-
-            // 6. Pagos
-            $pagos = Pago::with(['inscripcion.usuario', 'metodoPago'])
-                ->whereHas('inscripcion.usuario', function ($q) use ($searchTerm) {
-                    $q->where('nombre', 'like', $searchTerm)
-                      ->orWhere('apellido', 'like', $searchTerm);
-                })
-                ->orWhere('monto', 'like', $searchTerm)
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get();
-
-            // 7. Tipos de Curso
-            $tipos_curso = TipoCurso::where('nombre', 'like', $searchTerm)
-                ->orWhere('descripcion', 'like', $searchTerm)
-                ->orderBy('nombre')
-                ->limit(5)
-                ->get();
-
-            // 8. Tipos de Vehículo
-            $tipos_vehiculo = TipoVehiculo::where('nombre', 'like', $searchTerm)
-                ->orWhere('descripcion', 'like', $searchTerm)
-                ->orderBy('nombre')
-                ->limit(5)
-                ->get();
-
-            // 9. Métodos de Pago
-            $metodos_pago = MetodoPago::where('nombre', 'like', $searchTerm)
-                ->orWhere('descripcion', 'like', $searchTerm)
-                ->orderBy('nombre')
-                ->limit(5)
-                ->get();
-
-            // 10. Planes de Pago
-            $planes_pago = PlanPago::where('nombre', 'like', $searchTerm)
-                ->orWhere('numero_cuotas', 'like', $searchTerm)
-                ->orWhere('periodicidad', 'like', $searchTerm)
-                ->orderBy('nombre')
-                ->limit(5)
-                ->get();
-
-            // 11. Roles
+            // 8. Roles
             $roles = Rol::where('nombre', 'like', $searchTerm)
-                ->orWhere('descripcion', 'like', $searchTerm)
                 ->orderBy('nombre')
                 ->limit(5)
                 ->get();
 
-            // 12. Menús
+            // 9. Menus
             $menus = Menu::with('rol')
-                ->where('nombre', 'like', $searchTerm)
-                ->orWhere('ruta', 'like', $searchTerm)
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('nombre', 'like', $searchTerm)
+                      ->orWhere('ruta', 'like', $searchTerm);
+                })
                 ->orderBy('orden')
                 ->limit(5)
                 ->get();
 
-            // 13. Horarios de Cursos
-            $horarios = CursoHorario::with('edicion.curso')
-                ->whereHas('edicion.curso', function ($q) use ($searchTerm) {
-                    $q->where('nombre', 'like', $searchTerm);
-                })
-                ->orWhere('dia_semana', 'like', $searchTerm)
-                ->orWhere('hora_inicio', 'like', $searchTerm)
-                ->orderBy('created_at', 'desc')
-                ->limit(5)
-                ->get();
-
-            // 14. Eventos del Sistema
+            // 10. Eventos del Sistema
             $eventos = RegistroEvento::with('usuario')
-                ->where('ruta', 'like', $searchTerm)
-                ->orWhere('descripcion', 'like', $searchTerm)
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('ruta', 'like', $searchTerm)
+                      ->orWhere('descripcion', 'like', $searchTerm);
+                })
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get();
 
-            // 15. Visitas a Páginas
+            // 11. Visitas a Paginas
             $visitas = VisitaPagina::where('ruta', 'like', $searchTerm)
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
@@ -198,27 +145,23 @@ class GlobalSearchController extends Controller
 
             return response()->json([
                 'usuarios' => $usuarios,
-                'cursos' => $cursos,
-                'curso_ediciones' => $curso_ediciones,
-                'vehiculos' => $vehiculos,
-                'inscripciones' => $inscripciones,
+                'mascotas' => $mascotas,
+                'consultas' => $consultas,
+                'servicios' => $servicios,
+                'productos' => $productos,
+                'categorias' => $categorias,
                 'pagos' => $pagos,
-                'tipos_curso' => $tipos_curso,
-                'tipos_vehiculo' => $tipos_vehiculo,
-                'metodos_pago' => $metodos_pago,
-                'planes_pago' => $planes_pago,
                 'roles' => $roles,
                 'menus' => $menus,
-                'horarios' => $horarios,
                 'eventos' => $eventos,
                 'visitas' => $visitas
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error en búsqueda global: ' . $e->getMessage());
-            
+            Log::error('Error en busqueda global: ' . $e->getMessage());
+
             return response()->json([
-                'error' => 'Error en la búsqueda',
+                'error' => 'Error en la busqueda',
                 'message' => $e->getMessage()
             ], 500);
         }

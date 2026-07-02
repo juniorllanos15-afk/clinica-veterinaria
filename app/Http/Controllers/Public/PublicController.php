@@ -1,37 +1,35 @@
 <?php
-
 namespace App\Http\Controllers\Public;
-
 use App\Http\Controllers\Controller;
-use App\Models\Curso;
-use App\Models\TipoCurso;
+use App\Models\Servicio;
+use App\Models\Categoria;
 use Inertia\Inertia;
 
 class PublicController extends Controller
 {
     public function home()
     {
-        $cursosDestacados = Curso::with(['tipo_curso', 'curso_ediciones'])
+        $servicios = Servicio::with('categoria')
             ->orderBy('created_at', 'desc')
             ->limit(3)
             ->get();
 
         return Inertia::render('Public/Home', [
-            'cursos' => $cursosDestacados
+            'servicios' => $servicios
         ]);
     }
 
-    public function cursos()
+    public function servicios()
     {
-        $cursos = Curso::with(['tipo_curso', 'curso_ediciones'])
+        $servicios = Servicio::with('categoria')
             ->orderBy('nombre')
             ->get();
 
-        $tipos = TipoCurso::orderBy('nombre')->get();
+        $categorias = Categoria::orderBy('nombre')->get();
 
-        return Inertia::render('Public/Cursos', [
-            'cursos' => $cursos,
-            'tipos' => $tipos
+        return Inertia::render('Public/Servicios', [
+            'servicios' => $servicios,
+            'categorias' => $categorias
         ]);
     }
 

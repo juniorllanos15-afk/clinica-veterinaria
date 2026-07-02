@@ -5,7 +5,7 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Gestión de Pagos</h1>
-            <p class="page-subtitle">Administración de pagos realizados</p>
+            <p class="page-subtitle">Administración de pagos del sistema</p>
           </div>
           <Link :href="route('admin.pagos.create')">
             <Button variant="primary" size="lg">
@@ -21,28 +21,33 @@
             <table class="table">
               <thead class="table-header">
                 <tr>
-                  <th class="table-header-cell">Fecha</th>
-                  <th class="table-header-cell">Alumno</th>
-                  <th class="table-header-cell">Curso / Edición</th>
-                  <th class="table-header-cell">Método</th>
-                  <th class="table-header-cell">Monto</th>
+                  <th class="table-header-cell">ID</th>
+                  <th class="table-header-cell">Consulta #</th>
+                  <th class="table-header-cell">Mascota</th>
+                  <th class="table-header-cell">Total (Bs.)</th>
+                  <th class="table-header-cell">Tipo Pago</th>
+                  <th class="table-header-cell">Cuotas</th>
+                  <th class="table-header-cell">Estado</th>
                   <th class="table-header-cell text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody class="table-body">
                 <tr v-for="pago in pagos.data" :key="pago.id" class="table-row">
-                  <td class="table-cell">{{ formatDate(pago.fecha) }}</td>
-                  <td class="table-cell">{{ pago.alumno?.nombre }} {{ pago.alumno?.apellido }}</td>
-                  <td class="table-cell-secondary">
-                    <div>
-                      <p class="font-medium">{{ pago.inscripcion?.edicion?.curso?.nombre || '-' }}</p>
-                      <p class="text-xs text-theme-tertiary" v-if="pago.inscripcion?.edicion">
-                        {{ formatDateShort(pago.inscripcion.edicion.fecha_inicio) }} - {{ formatDateShort(pago.inscripcion.edicion.fecha_fin) }}
-                      </p>
-                    </div>
+                  <td class="table-cell">{{ pago.id }}</td>
+                  <td class="table-cell font-medium">{{ pago.consulta_id }}</td>
+                  <td class="table-cell">{{ pago.consulta?.mascota?.nombre }}</td>
+                  <td class="table-cell-secondary">Bs. {{ Number(pago.total).toFixed(2) }}</td>
+                  <td class="table-cell">
+                    <Badge :variant="pago.tipo_pago === 'contado' ? 'success' : 'info'">
+                      {{ capitalizeFirst(pago.tipo_pago) }}
+                    </Badge>
                   </td>
-                  <td class="table-cell">{{ pago.metodo_pago?.nombre }}</td>
-                  <td class="table-cell font-semibold">Bs. {{ Number(pago.monto || 0).toFixed(2) }}</td>
+                  <td class="table-cell-secondary">{{ pago.cantidad_cuotas || '-' }}</td>
+                  <td class="table-cell">
+                    <Badge :variant="pago.estado === 'completado' ? 'success' : pago.estado === 'pendiente' ? 'warning' : 'error'">
+                      {{ capitalizeFirst(pago.estado) }}
+                    </Badge>
+                  </td>
                   <td class="table-cell">
                     <div class="flex items-center justify-end gap-2">
                       <Link :href="route('admin.pagos.edit', pago.id)">
@@ -52,7 +57,7 @@
                           </svg>
                         </Button>
                       </Link>
-                      <Button variant="ghost" size="sm" @click="deletePago(pago.id)">
+                      <Button variant="ghost" size="sm" @click="eliminar(pago.id)">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-red-500">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                         </svg>
@@ -63,6 +68,7 @@
               </tbody>
             </table>
           </div>
+
           <div class="p-4 border-t border-theme">
             <Pagination :data="pagos" />
           </div>
@@ -75,6 +81,7 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Badge from '@/Components/UI/Badge.vue';
 import Button from '@/Components/UI/Button.vue';
 import Card from '@/Components/UI/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -82,33 +89,21 @@ import Pagination from '@/Components/Pagination.vue';
 defineProps<{
   pagos: {
     data: any[];
-    links?: any[];
-    from?: number;
-    to?: number;
-    total?: number;
+    links: any[];
+    from: number;
+    to: number;
+    total: number;
   };
 }>();
 
-const formatDate = (fecha: string) => {
-  return new Date(fecha).toLocaleDateString('es-BO', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+const capitalizeFirst = (str: string): string => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const formatDateShort = (fecha: string) => {
-  if (!fecha) return '-';
-  return new Date(fecha).toLocaleDateString('es-BO', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-const deletePago = (id: number) => {
-  if (confirm('¿Eliminar pago?')) {
-    router.delete(route('admin.pagos.destroy', id) as string);
+const eliminar = (id: number) => {
+  if (confirm('¿Está seguro de eliminar este pago?')) {
+    router.delete(route('admin.pagos.destroy', id));
   }
 };
 </script>
