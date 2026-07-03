@@ -81,6 +81,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('mascotas', MascotaController::class);
     Route::resource('consultas', ConsultaController::class);
     Route::resource('pagos', PagoController::class);
+    Route::get('pagos/{pago}/status', [PagoController::class, 'status'])->name('pagos.status');
+    Route::post('pagos/{pago}/cuotas/{cuota}/qr', [PagoController::class, 'generateCuotaQr'])->name('pagos.cuotas.qr');
 
     Route::get('historial', [HistorialController::class, 'index'])->name('historial.index');
     Route::get('historial/{mascota}', [HistorialController::class, 'show'])->name('historial.show');
@@ -110,6 +112,9 @@ Route::middleware(['auth', 'verified'])->prefix('veterinario')->name('veterinari
 Route::middleware(['auth', 'verified'])->prefix('cliente')->name('cliente.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Cliente\DashboardController::class, 'index'])->name('dashboard');
     Route::get('mascotas', [\App\Http\Controllers\Cliente\MascotaController::class, 'index'])->name('mascotas');
+    Route::get('mascotas/{mascota}', [\App\Http\Controllers\Cliente\MascotaController::class, 'show'])->name('mascotas.show');
     Route::get('consultas', [\App\Http\Controllers\Cliente\ConsultaController::class, 'index'])->name('consultas');
+    Route::get('consultas/{consulta}', [\App\Http\Controllers\Cliente\ConsultaController::class, 'show'])->name('consultas.show');
     Route::get('pagos', [\App\Http\Controllers\Cliente\PagoController::class, 'index'])->name('pagos');
+    Route::get('pagos/{pago}', [\App\Http\Controllers\Cliente\PagoController::class, 'show'])->name('pagos.show');
 });

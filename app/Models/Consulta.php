@@ -11,7 +11,7 @@ class Consulta extends Model
     ];
 
     protected $casts = [
-        'fecha_consulta' => 'date',
+        'fecha_consulta' => 'date:Y-m-d',
     ];
 
     public function mascota()

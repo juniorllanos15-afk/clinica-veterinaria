@@ -379,19 +379,19 @@ html.high-contrast.dark {
     }
     
     /* Badge adaptados al tema base (rol badges) */
-    .badge-admin {
+    .badge-propietario {
         @apply badge;
         background-color: rgb(var(--brand-primary) / 0.15);
         color: rgb(var(--brand-primary));
     }
-    
-    .badge-profesor {
+
+    .badge-veterinario {
         @apply badge;
         background-color: rgb(var(--brand-secondary) / 0.15);
         color: rgb(var(--brand-secondary));
     }
-    
-    .badge-alumno {
+
+    .badge-cliente {
         @apply badge bg-[rgb(var(--bg-tertiary))] text-[rgb(var(--text-primary))];
     }
     

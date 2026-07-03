@@ -1,4 +1,4 @@
-# Fix para Errores en Deploy
+# Fix para Errores en Deploy - Clínica Veterinaria
 
 ## ❌ Error 1: Conflicto de Dependencias npm
 

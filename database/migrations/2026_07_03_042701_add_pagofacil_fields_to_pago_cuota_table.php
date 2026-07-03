@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('pago_cuota', function (Blueprint $table) {
+            $table->string('transaction_id')->nullable()->after('pago_id');
+            $table->string('payment_number')->nullable()->after('transaction_id');
+            $table->string('estado_pago', 20)->default('pendiente')->after('payment_number');
+            $table->text('qr_base64')->nullable()->after('estado_pago');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('pago_cuota', function (Blueprint $table) {
+            $table->dropColumn(['transaction_id', 'payment_number', 'estado_pago', 'qr_base64']);
+        });
+    }
+};

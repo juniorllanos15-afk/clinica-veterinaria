@@ -38,12 +38,12 @@ class RegisteredUserController extends Controller
             'direccion' => 'nullable|string|max:255',
         ]);
 
-        // Crear usuario siempre con rol de Alumno (rol_id: 3)
+        // Crear usuario siempre con rol de Cliente (rol_id: 3)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol_id' => 3, // Siempre alumno para registro público
+            'rol_id' => 3, // Siempre cliente para registro público
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
         ]);

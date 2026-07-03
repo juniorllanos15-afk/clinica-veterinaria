@@ -20,6 +20,7 @@
                   <th class="table-header-cell">Sexo</th>
                   <th class="table-header-cell">Color</th>
                   <th class="table-header-cell">Peso</th>
+                  <th class="table-header-cell">Acción</th>
                 </tr>
               </thead>
               <tbody class="table-body">
@@ -30,6 +31,11 @@
                   <td class="table-cell">{{ mascota.sexo }}</td>
                   <td class="table-cell-secondary">{{ mascota.color }}</td>
                   <td class="table-cell-secondary">{{ mascota.peso ? mascota.peso + ' kg' : '-' }}</td>
+                  <td class="table-cell">
+                    <Link :href="route('cliente.mascotas.show', mascota.id)">
+                      <Button variant="primary" size="sm">Ver</Button>
+                    </Link>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -47,6 +53,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Button from '@/Components/UI/Button.vue';
 import Card from '@/Components/UI/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
 

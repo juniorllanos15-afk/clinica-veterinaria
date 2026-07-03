@@ -35,7 +35,7 @@ import { Link } from '@inertiajs/vue3';
             
             <div class="text-white/80 text-sm">
               <p>Sistema de gestión para clínica veterinaria</p>
-              <p class="mt-2">Acceso para administradores, veterinarios y clientes</p>
+              <p class="mt-2">Acceso para propietarios, veterinarios y clientes</p>
             </div>
           </div>
         </div>

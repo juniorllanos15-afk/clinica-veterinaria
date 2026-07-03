@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    container_name: escuela_conduccion_app
+    container_name: clinica_veterinaria_app
     restart: unless-stopped
     working_dir: /var/www/html
     ports:
@@ -11,15 +11,15 @@ services:
     volumes:
       - ./:/var/www/html
     networks:
-      - escuela_network
+      - clinica_network
     environment:
-      - PHP_IDE_CONFIG=serverName=escuela-conduccion
+      - PHP_IDE_CONFIG=serverName=clinica-veterinaria
     depends_on:
       - db
 
   caddy:
     image: caddy:2-alpine
-    container_name: escuela_conduccion_caddy
+    container_name: clinica_veterinaria_caddy
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -30,27 +30,27 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - escuela_network
+      - clinica_network
     depends_on:
       - app
 
   db:
     image: postgres:15-alpine
-    container_name: escuela_conduccion_db
+    container_name: clinica_veterinaria_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: escuela_conduccion
-      POSTGRES_USER: escuela_user
-      POSTGRES_PASSWORD: escuela_secret
+      POSTGRES_DB: clinica_veterinaria
+      POSTGRES_USER: clinica_user
+      POSTGRES_PASSWORD: clinica_secret
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - escuela_network
+      - clinica_network
 
 networks:
-  escuela_network:
+  clinica_network:
     driver: bridge
 
 volumes:

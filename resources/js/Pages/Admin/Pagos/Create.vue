@@ -16,7 +16,7 @@
                 <Select
                   v-model="form.consulta_id"
                   label="Consulta"
-                  :options="consultas.map(c => ({ value: c.id, label: '#' + c.id + ' - ' + c.mascota?.nombre }))"
+                  :options="consultas.map(c => ({ value: c.id, label: '#' + c.id + ' - ' + (c.mascota?.nombre || 'Sin mascota') + ' (' + c.fecha_consulta + ')' }))"
                   :error="validationErrors.consulta_id || form.errors.consulta_id"
                 />
 
@@ -56,6 +56,31 @@
                   :error="validationErrors.fecha_pago || form.errors.fecha_pago"
                 />
               </div>
+
+              <div v-if="form.cuotas.length > 0" class="border-t pt-4">
+                <h3 class="text-lg font-semibold mb-3">Cuotas</h3>
+                <div v-for="(cuota, index) in form.cuotas" :key="index" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3 p-3 border rounded-lg">
+                  <Input
+                    :model-value="'Cuota #' + cuota.numero_cuota"
+                    label="Número"
+                    disabled
+                  />
+                  <Input
+                    :model-value="cuota.monto.toFixed(2)"
+                    type="number"
+                    step="0.01"
+                    label="Monto (Bs.)"
+                    disabled
+                  />
+                  <Input
+                    :model-value="cuota.fecha_vencimiento"
+                    type="date"
+                    :label="'Fecha Venc. Cuota #' + cuota.numero_cuota"
+                    :error="validationErrors['cuotas.' + index + '.fecha_vencimiento'] || form.errors['cuotas.' + index + '.fecha_vencimiento']"
+                    @update:model-value="(val: any) => { form.cuotas[index].fecha_vencimiento = val; }"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="form-actions">
@@ -75,6 +100,7 @@
 
 <script setup lang="ts">
 import { useForm, Link } from '@inertiajs/vue3';
+import { watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Button from '@/Components/UI/Button.vue';
 import Card from '@/Components/UI/Card.vue';
@@ -92,9 +118,37 @@ const form = useForm({
   cantidad_cuotas: '',
   total: '',
   fecha_pago: '',
+  cuotas: [] as any[],
 });
 
 const { errors: validationErrors, validate, clearErrors, setErrors } = useValidation();
+
+watch(() => form.consulta_id, (val) => {
+  if (!val) {
+    form.total = '';
+    return;
+  }
+  const consulta = props.consultas.find(c => c.id === Number(val));
+  if (consulta) {
+    const totalServicios = consulta.servicios?.reduce((sum: number, s: any) => sum + Number(s.pivot?.subtotal || 0), 0) || 0;
+    const totalProductos = consulta.productos?.reduce((sum: number, p: any) => sum + Number(p.pivot?.subtotal || 0), 0) || 0;
+    form.total = totalServicios + totalProductos;
+  }
+});
+
+watch(() => form.cantidad_cuotas, (val) => {
+  const count = Number(val) || 0;
+  const montoPorCuota = count > 0 ? (Number(form.total) || 0) / count : 0;
+  const cuotas = [];
+  for (let i = 0; i < count; i++) {
+    cuotas.push({
+      numero_cuota: i + 1,
+      monto: montoPorCuota,
+      fecha_vencimiento: form.cuotas[i]?.fecha_vencimiento || '',
+    });
+  }
+  form.cuotas = cuotas;
+});
 
 const submit = () => {
   clearErrors();

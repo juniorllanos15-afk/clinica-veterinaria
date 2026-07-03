@@ -5,11 +5,11 @@ use Illuminate\Database\Eloquent\Model;
 class Pago extends Model
 {
     protected $table = 'pago';
-    protected $fillable = ['consulta_id', 'tipo_pago', 'cantidad_cuotas', 'total', 'fecha_pago', 'estado'];
+    protected $fillable = ['consulta_id', 'tipo_pago', 'cantidad_cuotas', 'total', 'fecha_pago', 'estado', 'transaction_id', 'payment_number', 'estado_pago', 'qr_base64'];
 
     protected $casts = [
         'total' => 'decimal:2',
-        'fecha_pago' => 'date',
+        'fecha_pago' => 'date:Y-m-d',
     ];
 
     public function consulta()

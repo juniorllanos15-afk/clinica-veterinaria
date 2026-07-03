@@ -8,7 +8,7 @@ class HistorialController extends Controller
 {
     public function index()
     {
-        $mascotas = Mascota::with('dueno')->paginate(15);
+        $mascotas = Mascota::with('dueno')->withCount('consultas')->paginate(15);
         return Inertia::render('Admin/Historial/Index', compact('mascotas'));
     }
 

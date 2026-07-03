@@ -124,6 +124,13 @@
 
       <!-- Page Content -->
       <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <!-- Flash Messages -->
+        <div v-if="flash.success" class="mb-4 px-4 py-3 rounded-lg bg-green-100 border border-green-300 text-green-800">
+          {{ flash.success }}
+        </div>
+        <div v-if="flash.error" class="mb-4 px-4 py-3 rounded-lg bg-red-100 border border-red-300 text-red-800">
+          {{ flash.error }}
+        </div>
         <slot />
       </main>
 
@@ -165,11 +172,16 @@ interface PageProps {
     user: User;
   };
   visitasPagina: number;
+  flash: {
+    success?: string;
+    error?: string;
+  };
 }
 
 const sidebarCollapsed = ref(false);
 const userDropdownOpen = ref(false);
 const page = usePage<PageProps>();
+const flash = computed(() => page.props.flash ?? {});
 
 const user = computed(() => page.props.auth?.user);
 const visitasPagina = computed(() => page.props.visitasPagina || 0);

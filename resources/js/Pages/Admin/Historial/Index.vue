@@ -30,7 +30,7 @@
                   <td class="table-cell-secondary">{{ mascota.especie }}</td>
                   <td class="table-cell-secondary">{{ mascota.raza }}</td>
                   <td class="table-cell">{{ mascota.dueno?.nombre }} {{ mascota.dueno?.apellido }}</td>
-                  <td class="table-cell">—</td>
+                  <td class="table-cell">{{ mascota.consultas_count }}</td>
                   <td class="table-cell">
                     <div class="flex items-center justify-end gap-2">
                       <Link :href="route('admin.historial.show', mascota.id)">

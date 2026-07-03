@@ -11,6 +11,10 @@ class PagoFacilService
     private $tokenService;
     private $tokenSecret;
     private $callbackUrl;
+    private $paymentMethod;
+    private $commerceId;
+    private $clientCode;
+    private $testAmount;
     private $accessToken = null;
     private $tokenExpiration = null;
 
@@ -20,6 +24,10 @@ class PagoFacilService
         $this->tokenService = env('PAGOFACIL_TOKEN_SERVICE');
         $this->tokenSecret = env('PAGOFACIL_TOKEN_SECRET');
         $this->callbackUrl = env('PAGOFACIL_CALLBACK_URL');
+        $this->paymentMethod = env('PAGOFACIL_PAYMENT_METHOD', 34);
+        $this->commerceId = env('PAGOFACIL_COMMERCE_ID');
+        $this->clientCode = env('PAGOFACIL_CLIENT_CODE', 'VET01');
+        $this->testAmount = env('PAGOFACIL_PAYMENT_AMOUNT');
     }
 
     /**
@@ -29,8 +37,8 @@ class PagoFacilService
     {
         try {
             $response = Http::withHeaders([
-                'tcTokenService' => $this->tokenService,
-                'tcTokenSecret' => $this->tokenSecret,
+                'tctokenservice' => $this->tokenService,
+                'tctokensecret' => $this->tokenSecret,
             ])->post("{$this->apiUrl}/login");
 
             $data = $response->json();
@@ -63,6 +71,11 @@ class PagoFacilService
      */
     public function generateQr($inscripcionId, $clientName, $email, $phoneNumber, $amount = 0.10)
     {
+        // En modo prueba, usar monto fijo desde .env para evitar pagos reales
+        if ($this->testAmount !== null) {
+            $amount = (float) $this->testAmount;
+        }
+
         // Autenticar si no hay token o expiró
         if (!$this->accessToken || now() >= $this->tokenExpiration) {
             $loginResult = $this->login();
@@ -74,11 +87,8 @@ class PagoFacilService
         $paymentNumber = "INS-{$inscripcionId}-" . time();
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$this->accessToken}",
-                'Content-Type' => 'application/json',
-            ])->post("{$this->apiUrl}/generate-qr", [
-                'paymentMethod' => 4, // QR BCP
+            $body = [
+                'paymentMethod' => (int) $this->paymentMethod,
                 'clientName' => $clientName,
                 'documentType' => 1,
                 'documentId' => '123456',
@@ -87,7 +97,7 @@ class PagoFacilService
                 'paymentNumber' => $paymentNumber,
                 'amount' => $amount,
                 'currency' => 2, // BOB
-                'clientCode' => 'VET01',
+                'clientCode' => $this->clientCode,
                 'callbackUrl' => $this->callbackUrl,
                 'orderDetail' => [
                     [
@@ -99,7 +109,18 @@ class PagoFacilService
                         'total' => $amount
                     ]
                 ]
-            ]);
+            ];
+
+            if ($this->commerceId) {
+                $body['commerceId'] = $this->commerceId;
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$this->accessToken}",
+                'Content-Type' => 'application/json',
+                'tctokenservice' => $this->tokenService,
+                'tctokensecret' => $this->tokenSecret,
+            ])->post("{$this->apiUrl}/generate-qr", $body);
 
             $data = $response->json();
 

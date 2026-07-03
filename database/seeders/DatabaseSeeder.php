@@ -11,9 +11,9 @@ class DatabaseSeeder extends Seeder
         // 1. ROLES (3 roles)
         if (DB::table('rol')->count() === 0) {
             DB::table('rol')->insert([
-                ['nombre' => 'administrador', 'descripcion' => 'Propietario / Dueño de la clínica', 'created_at' => now(), 'updated_at' => now()],
-                ['nombre' => 'profesor', 'descripcion' => 'Veterinario', 'created_at' => now(), 'updated_at' => now()],
-                ['nombre' => 'alumno', 'descripcion' => 'Cliente / Dueño de mascota', 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'propietario', 'descripcion' => 'Propietario / Dueño de la clínica', 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'veterinario', 'descripcion' => 'Veterinario', 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'cliente', 'descripcion' => 'Cliente / Dueño de mascota', 'created_at' => now(), 'updated_at' => now()],
             ]);
         }
 

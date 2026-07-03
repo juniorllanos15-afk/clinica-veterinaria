@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ContadorVisitas::class,
             \App\Http\Middleware\RegistrarEvento::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'admin/mascotas',
+            'admin/mascotas/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -106,7 +106,7 @@ defineProps<{
 }>();
 
 const getRolVariant = (rolNombre: string): 'success' | 'warning' | 'error' | 'info' | 'neutral' => {
-  if (rolNombre === 'administrador') return 'error';
+  if (rolNombre === 'propietario') return 'error';
   if (rolNombre === 'veterinario') return 'info';
   if (rolNombre === 'cliente') return 'success';
   return 'neutral';

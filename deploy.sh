@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Script de despliegue minimalista - Escuela de Conducción
+# Script de despliegue minimalista - Clínica Veterinaria
 # Ejecutar desde: /home/grupo17sa/proyecto2/
 # Uso: bash deploy.sh
 # ============================================================================
@@ -125,14 +125,15 @@ echo -e "${YELLOW}Acceso:${NC}"
 echo "  http://mail.tecnoweb.org.bo/inf513/grupo17sa/proyecto2/$PROYECTO/public"
 echo ""
 echo -e "${YELLOW}Admin:${NC}"
-echo "  Email: admin@escuela.com"
-echo "  Contraseña: password"
+    echo "  Email: juniorllanos15@gmail.com"
+    echo "  Contraseña: 123123"
 echo ""
 echo -e "${YELLOW}Base de datos:${NC}"
-echo "  Usuarios: 3 usuarios de prueba"
-echo "  Cursos: 3 cursos con 5 ediciones"
-echo "  Horarios: 15 horarios configurados"
-echo "  Datos: 2 inscripciones + 4 pagos"
+echo "  Usuarios: propietario, veterinarios y clientes de prueba"
+echo "  Productos: 20 productos en 4 categorías"
+echo "  Servicios: 8 servicios veterinarios"
+echo "  Mascotas: 9 mascotas registradas"
+echo "  Consultas: 8 consultas con productos/servicios"
 echo ""
 echo -e "${YELLOW}Panel de control:${NC}"
 echo "  http://mail.tecnoweb.org.bo/inf513/grupo17sa/proyecto2/$PROYECTO/public/admin/database"

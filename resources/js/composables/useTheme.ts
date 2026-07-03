@@ -4,11 +4,11 @@ export type Mode = 'light' | 'dark';
 export type BaseTheme = 'kids' | 'youth' | 'adult';
 
 const STORAGE_KEYS = {
-    mode: 'escuela-mode',
-    base: 'escuela-base-theme',
-    fontSize: 'escuela-font-size',
-    highContrast: 'escuela-high-contrast',
-    autoDark: 'escuela-auto-dark'
+    mode: 'clinica-mode',
+    base: 'clinica-base-theme',
+    fontSize: 'clinica-font-size',
+    highContrast: 'clinica-high-contrast',
+    autoDark: 'clinica-auto-dark'
 };
 
 const mode = ref<Mode>('light');

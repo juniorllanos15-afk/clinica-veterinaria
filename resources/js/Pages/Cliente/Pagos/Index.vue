@@ -21,6 +21,7 @@
                   <th class="table-header-cell">Tipo Pago</th>
                   <th class="table-header-cell">Estado</th>
                   <th class="table-header-cell">Cuotas</th>
+                  <th class="table-header-cell">Acción</th>
                 </tr>
               </thead>
               <tbody class="table-body">
@@ -45,6 +46,11 @@
                     </template>
                     <span v-else>-</span>
                   </td>
+                  <td class="table-cell">
+                    <Link :href="route('cliente.pagos.show', pago.id)">
+                      <Button variant="primary" size="sm">Ver</Button>
+                    </Link>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -63,6 +69,7 @@
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Badge from '@/Components/UI/Badge.vue';
+import Button from '@/Components/UI/Button.vue';
 import Card from '@/Components/UI/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
 

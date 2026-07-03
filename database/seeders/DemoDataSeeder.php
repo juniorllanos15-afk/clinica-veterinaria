@@ -2,223 +2,81 @@
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // 6. CURSOS (3 cursos)
-        if (DB::table('curso')->count() === 0) {
-            DB::table('curso')->insert([
-                [
-                    'nombre' => 'Conducción Nivel A',
-                    'descripcion' => 'Curso básico de conducción para principiantes - Automóvil',
-                    'tipo_curso_id' => 1,
-                    'capacidad_maxima' => 20,
-                    'estado_curso' => 'activo',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nombre' => 'Conducción Nivel B',
-                    'descripcion' => 'Curso intermedio de conducción en ciudad - Automóvil',
-                    'tipo_curso_id' => 1,
-                    'capacidad_maxima' => 15,
-                    'estado_curso' => 'activo',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nombre' => 'Conducción Motocicleta',
-                    'descripcion' => 'Curso básico de conducción para motocicletas',
-                    'tipo_curso_id' => 1,
-                    'capacidad_maxima' => 12,
-                    'estado_curso' => 'activo',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
+        // Additional demo data beyond DatabaseSeeder
+
+        // 1. MÁS CLIENTES
+        if (!DB::table('usuario')->where('email', 'sofia.martinez@mail.com')->exists()) {
+            DB::table('usuario')->insert([
+                ['nombre' => 'Sofía', 'apellido' => 'Martínez', 'email' => 'sofia.martinez@mail.com', 'telefono' => '70000007', 'contrasena' => Hash::make('123123'), 'rol_id' => 3, 'estado_usuario' => 'activo', 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'Diego', 'apellido' => 'Ramírez', 'email' => 'diego.ramirez@mail.com', 'telefono' => '70000008', 'contrasena' => Hash::make('123123'), 'rol_id' => 3, 'estado_usuario' => 'activo', 'created_at' => now(), 'updated_at' => now()],
             ]);
         }
 
-        // 7. EDICIONES DE CURSO (5 ediciones: 1 pasada + 4 próximas)
-        if (DB::table('curso_edicion')->count() === 0) {
-            $ediciones = [
-                // Edición pasada (finalizó hace 1 mes)
-                [
-                    'curso_id' => 1,
-                    'fecha_inicio' => Carbon::now()->subMonths(2)->startOfMonth(),
-                    'fecha_fin' => Carbon::now()->subMonth()->endOfMonth(),
-                    'cupo_total' => 20,
-                    'cupo_disponible' => 18,
-                    'precio_final' => 1500.00,
-                    'estado_edicion' => 'finalizado',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                // Ediciones próximas
-                [
-                    'curso_id' => 1,
-                    'fecha_inicio' => Carbon::now()->addDays(5),
-                    'fecha_fin' => Carbon::now()->addDays(35),
-                    'cupo_total' => 20,
-                    'cupo_disponible' => 20,
-                    'precio_final' => 1500.00,
-                    'estado_edicion' => 'programado',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'curso_id' => 2,
-                    'fecha_inicio' => Carbon::now()->addDays(40),
-                    'fecha_fin' => Carbon::now()->addDays(70),
-                    'cupo_total' => 15,
-                    'cupo_disponible' => 15,
-                    'precio_final' => 1800.00,
-                    'estado_edicion' => 'programado',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'curso_id' => 2,
-                    'fecha_inicio' => Carbon::now()->addDays(75),
-                    'fecha_fin' => Carbon::now()->addDays(105),
-                    'cupo_total' => 15,
-                    'cupo_disponible' => 15,
-                    'precio_final' => 1800.00,
-                    'estado_edicion' => 'programado',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'curso_id' => 3,
-                    'fecha_inicio' => Carbon::now()->addDays(10),
-                    'fecha_fin' => Carbon::now()->addDays(40),
-                    'cupo_total' => 12,
-                    'cupo_disponible' => 12,
-                    'precio_final' => 1200.00,
-                    'estado_edicion' => 'programado',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-            ];
-
-            foreach ($ediciones as $edicion) {
-                DB::table('curso_edicion')->insert($edicion);
-            }
-        }
-
-        // 8. HORARIOS (15 horarios: 3 días/semana, 2 horas/curso, 5 ediciones sin solaparse)
-        if (DB::table('curso_horario')->count() === 0) {
-            $horarios = [
-                // Edición 1 (pasada) - Curso A - Lun/Mie/Vie 08:00-10:00
-                ['curso_id' => 1, 'curso_edicion_id' => 1, 'dia_semana' => 1, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 1, 'curso_edicion_id' => 1, 'dia_semana' => 3, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 1, 'curso_edicion_id' => 1, 'dia_semana' => 5, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-
-                // Edición 2 - Curso A - Mar/Jue/Sáb 10:00-12:00
-                ['curso_id' => 1, 'curso_edicion_id' => 2, 'dia_semana' => 2, 'hora_inicio' => '10:00:00', 'hora_fin' => '12:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 1, 'curso_edicion_id' => 2, 'dia_semana' => 4, 'hora_inicio' => '10:00:00', 'hora_fin' => '12:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 1, 'curso_edicion_id' => 2, 'dia_semana' => 6, 'hora_inicio' => '10:00:00', 'hora_fin' => '12:00:00', 'created_at' => now(), 'updated_at' => now()],
-
-                // Edición 3 - Curso B - Lun/Mie/Vie 14:00-16:00
-                ['curso_id' => 2, 'curso_edicion_id' => 3, 'dia_semana' => 1, 'hora_inicio' => '14:00:00', 'hora_fin' => '16:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 2, 'curso_edicion_id' => 3, 'dia_semana' => 3, 'hora_inicio' => '14:00:00', 'hora_fin' => '16:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 2, 'curso_edicion_id' => 3, 'dia_semana' => 5, 'hora_inicio' => '14:00:00', 'hora_fin' => '16:00:00', 'created_at' => now(), 'updated_at' => now()],
-
-                // Edición 4 - Curso B - Mar/Jue/Sáb 16:00-18:00
-                ['curso_id' => 2, 'curso_edicion_id' => 4, 'dia_semana' => 2, 'hora_inicio' => '16:00:00', 'hora_fin' => '18:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 2, 'curso_edicion_id' => 4, 'dia_semana' => 4, 'hora_inicio' => '16:00:00', 'hora_fin' => '18:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 2, 'curso_edicion_id' => 4, 'dia_semana' => 6, 'hora_inicio' => '16:00:00', 'hora_fin' => '18:00:00', 'created_at' => now(), 'updated_at' => now()],
-
-                // Edición 5 - Motocicleta - Mar/Jue/Sáb 08:00-10:00
-                ['curso_id' => 3, 'curso_edicion_id' => 5, 'dia_semana' => 2, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 3, 'curso_edicion_id' => 5, 'dia_semana' => 4, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-                ['curso_id' => 3, 'curso_edicion_id' => 5, 'dia_semana' => 6, 'hora_inicio' => '08:00:00', 'hora_fin' => '10:00:00', 'created_at' => now(), 'updated_at' => now()],
-            ];
-
-            foreach ($horarios as $horario) {
-                DB::table('curso_horario')->insert($horario);
-            }
-        }
-
-        // 9. INSCRIPCIONES (2 inscripciones a la edición pasada)
-        if (DB::table('inscripcion')->count() === 0) {
-            // Inscripción 1: Ana Pérez (alumno extra) - 3 cuotas
-            DB::table('inscripcion')->insert([
-                'alumno_id' => 5, // Ana Pérez
-                'curso_id' => 1, // Conducción A
-                'curso_edicion_id' => 1, // Edición pasada
-                'fecha_inscripcion' => Carbon::now()->subMonths(2)->subDays(5),
-                'estado_inscripcion' => 'activa',
-                'plan_pago_id' => 2, // 3 cuotas
-                'monto_total' => 1500.00,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            // Inscripción 2: Juan Alumno (presentación) - 1 cuota
-            DB::table('inscripcion')->insert([
-                'alumno_id' => 3, // alumno@escuela.com
-                'curso_id' => 1, // Conducción A
-                'curso_edicion_id' => 1, // Edición pasada
-                'fecha_inscripcion' => Carbon::now()->subMonths(2)->subDays(5),
-                'estado_inscripcion' => 'activa',
-                'plan_pago_id' => 1, // 1 cuota
-                'monto_total' => 1500.00,
-                'created_at' => now(),
-                'updated_at' => now()
+        // 2. MÁS MASCOTAS
+        if (DB::table('mascota')->count() < 10) {
+            DB::table('mascota')->insert([
+                ['nombre' => 'Max',    'especie' => 'Perro', 'raza' => 'Golden Retriever', 'fecha_nacimiento' => '2021-09-10', 'sexo' => 'Macho',  'color' => 'Dorado',  'peso' => 28.00, 'dueno_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'Nina',   'especie' => 'Perro', 'raza' => 'Beagle',           'fecha_nacimiento' => '2022-04-22', 'sexo' => 'Hembra', 'color' => 'Tricolor', 'peso' => 12.50, 'dueno_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'Simba',  'especie' => 'Gato',  'raza' => 'Maine Coon',       'fecha_nacimiento' => '2020-12-01', 'sexo' => 'Macho',  'color' => 'Naranja', 'peso' => 6.20,  'dueno_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+                ['nombre' => 'Canela', 'especie' => 'Perro', 'raza' => 'Cocker Spaniel',  'fecha_nacimiento' => '2023-02-14', 'sexo' => 'Hembra', 'color' => 'Café',    'peso' => 10.00, 'dueno_id' => 8, 'created_at' => now(), 'updated_at' => now()],
             ]);
         }
 
-        // 14. PAGOS (4 pagos según los planes)
-        if (DB::table('pago')->count() === 0) {
-            // Pago 1 - Ana Pérez cuota 1/3
+        // 3. MÁS CONSULTAS
+        if (DB::table('consulta')->count() < 10) {
+            DB::table('consulta')->insert([
+                ['fecha_consulta' => Carbon::now()->subDays(5)->toDateString(), 'motivo_consulta' => 'Dolor al caminar y cojera',                    'diagnostico' => 'Displasia de cadera leve',                             'tratamiento' => 'Antiinflamatorio, condroprotectores, fisioterapia',                                             'observaciones' => 'Evitar saltos, control en 30 días',                           'mascota_id' => 6, 'veterinario_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+                ['fecha_consulta' => Carbon::now()->subDays(3)->toDateString(), 'motivo_consulta' => 'Estornudos frecuentes y secreción ocular',       'diagnostico' => 'Conjuntivitis bacteriana + rinitis',                     'tratamiento' => 'Colirio antibiótico, antihistamínico oral',                                                    'observaciones' => 'Aislar de otros animales 5 días',                            'mascota_id' => 7, 'veterinario_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+                ['fecha_consulta' => Carbon::now()->subDays(1)->toDateString(), 'motivo_consulta' => 'Revisión post-operatoria y retiro de puntos',      'diagnostico' => 'Herida quirúrgica cicatrizando correctamente',           'tratamiento' => 'Retiro de suturas, curación local',                                                            'observaciones' => 'Continuar con antibiótico 3 días más',                        'mascota_id' => 8, 'veterinario_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
+
+        // 4. CONSULTA_PRODUCTO adicionales
+        if (DB::table('consulta_producto')->count() < 15) {
+            DB::table('consulta_producto')->insert([
+                ['consulta_id' => 6, 'producto_id' => 5,  'cantidad' => 1, 'precio' => 40.00, 'subtotal' => 40.00, 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 6, 'producto_id' => 10, 'cantidad' => 1, 'precio' => 30.00, 'subtotal' => 30.00, 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 7, 'producto_id' => 2,  'cantidad' => 1, 'precio' => 60.00, 'subtotal' => 60.00, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
+
+        // 5. CONSULTA_SERVICIO adicionales
+        if (DB::table('consulta_servicio')->count() < 15) {
+            DB::table('consulta_servicio')->insert([
+                ['consulta_id' => 6, 'servicio_id' => 1, 'cantidad' => 1, 'precio' => 80.00,  'subtotal' => 80.00,  'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 6, 'servicio_id' => 7, 'cantidad' => 1, 'precio' => 120.00, 'subtotal' => 120.00, 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 7, 'servicio_id' => 1, 'cantidad' => 1, 'precio' => 80.00,  'subtotal' => 80.00,  'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 7, 'servicio_id' => 7, 'cantidad' => 1, 'precio' => 120.00, 'subtotal' => 120.00, 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 8, 'servicio_id' => 5, 'cantidad' => 1, 'precio' => 500.00, 'subtotal' => 500.00, 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 8, 'servicio_id' => 1, 'cantidad' => 1, 'precio' => 80.00,  'subtotal' => 80.00,  'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
+
+        // 6. PAGOS adicionales
+        if (DB::table('pago')->count() < 5) {
             DB::table('pago')->insert([
-                'alumno_id' => 5,
-                'inscripcion_id' => 1,
-                'fecha' => Carbon::now()->subMonths(2),
-                'monto' => 500.00,
-                'metodo_pago_id' => 3, // Efectivo
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            // Pago 2 - Ana Pérez cuota 2/3
-            DB::table('pago')->insert([
-                'alumno_id' => 5,
-                'inscripcion_id' => 1,
-                'fecha' => Carbon::now()->subMonth(),
-                'monto' => 500.00,
-                'metodo_pago_id' => 2, // Tarjeta
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            // Pago 3 - Ana Pérez cuota 3/3 (QR con campos PagoFácil)
-            DB::table('pago')->insert([
-                'alumno_id' => 5,
-                'inscripcion_id' => 1,
-                'fecha' => Carbon::now(),
-                'monto' => 500.00,
-                'metodo_pago_id' => 1, // QR
-                'transaction_id' => 'TXN-DEMO-001',
-                'payment_number' => 'PAY-DEMO-001',
-                'estado_pago' => 'pagado',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-
-            // Pago 4 - Juan Alumno (pago completo)
-            DB::table('pago')->insert([
-                'alumno_id' => 3,
-                'inscripcion_id' => 2,
-                'fecha' => Carbon::now()->subMonths(2),
-                'monto' => 1500.00,
-                'metodo_pago_id' => 3, // Efectivo
-                'created_at' => now(),
-                'updated_at' => now()
+                ['consulta_id' => 6, 'tipo_pago' => 'credito', 'cantidad_cuotas' => 3, 'total' => 270.00, 'fecha_pago' => Carbon::now()->subDays(5)->toDateString(), 'estado' => 'Pendiente', 'created_at' => now(), 'updated_at' => now()],
+                ['consulta_id' => 7, 'tipo_pago' => 'contado', 'cantidad_cuotas' => 1, 'total' => 260.00, 'fecha_pago' => Carbon::now()->subDays(3)->toDateString(), 'estado' => 'Pagado',   'created_at' => now(), 'updated_at' => now()],
             ]);
         }
+
+        // 7. PAGO_CUOTAS adicionales
+        if (DB::table('pago_cuota')->count() < 10) {
+            DB::table('pago_cuota')->insert([
+                ['pago_id' => 3, 'numero_cuota' => 1, 'monto' => 90.00, 'fecha_vencimiento' => Carbon::now()->addMonth()->toDateString(),  'fecha_pago' => null, 'estado' => 'Pendiente', 'created_at' => now(), 'updated_at' => now()],
+                ['pago_id' => 3, 'numero_cuota' => 2, 'monto' => 90.00, 'fecha_vencimiento' => Carbon::now()->addMonths(2)->toDateString(), 'fecha_pago' => null, 'estado' => 'Pendiente', 'created_at' => now(), 'updated_at' => now()],
+                ['pago_id' => 3, 'numero_cuota' => 3, 'monto' => 90.00, 'fecha_vencimiento' => Carbon::now()->addMonths(3)->toDateString(), 'fecha_pago' => null, 'estado' => 'Pendiente', 'created_at' => now(), 'updated_at' => now()],
+                ['pago_id' => 4, 'numero_cuota' => 1, 'monto' => 260.00, 'fecha_vencimiento' => Carbon::now()->subDays(3)->toDateString(),  'fecha_pago' => Carbon::now()->subDays(3)->toDateString(), 'estado' => 'Pagado', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
+
+        $this->command->info('   Demo data adicional cargada correctamente');
     }
 }

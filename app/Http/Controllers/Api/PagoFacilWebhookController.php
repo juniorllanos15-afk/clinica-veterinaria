@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pago;
+use App\Models\PagoCuota;
 use App\Services\PagoFacilService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -28,7 +30,6 @@ class PagoFacilWebhookController extends Controller
                 'headers' => $request->headers->all(),
             ]);
 
-            // Verificar y procesar el callback
             $result = $this->pagoFacilService->verifyCallback($request->all());
 
             if (!$result['success']) {
@@ -36,35 +37,70 @@ class PagoFacilWebhookController extends Controller
                     'message' => $result['message'],
                     'data' => $request->all(),
                 ]);
+                return $this->pagoFacilService->getCallbackResponse();
+            }
+
+            $paymentNumber = $result['payment_number'];
+
+            // Buscar primero si es un pago de cuota
+            $cuota = PagoCuota::where('payment_number', $paymentNumber)->first();
+
+            if ($cuota) {
+                $cuota->update([
+                    'estado' => 'pagado',
+                    'estado_pago' => 'paid',
+                    'fecha_pago' => Carbon::today(),
+                ]);
+
+                Log::info('Cuota marcada como pagada', [
+                    'cuota_id' => $cuota->id,
+                    'payment_number' => $paymentNumber,
+                ]);
+
+                // Verificar si todas las cuotas del pago están pagadas
+                $pago = $cuota->pago;
+                $cuotasRestantes = $pago->cuotas()->where('estado', '!=', 'pagado')->count();
+
+                if ($cuotasRestantes === 0) {
+                    $pago->update([
+                        'estado' => 'pagado',
+                        'estado_pago' => 'paid',
+                    ]);
+                    Log::info('Pago marcado como pagado (todas las cuotas pagadas)', [
+                        'pago_id' => $pago->id,
+                    ]);
+                }
 
                 return $this->pagoFacilService->getCallbackResponse();
             }
 
-            // Buscar el pago por transaction_id
-            $pago = Pago::where('transaction_id', $result['transactionId'])->first();
+            // Buscar si es un pago principal (sin cuotas)
+            $pago = Pago::where('payment_number', $paymentNumber)->first();
 
-            if (!$pago) {
-                Log::error('Pago no encontrado para transaction_id', [
-                    'transaction_id' => $result['transactionId'],
+            if ($pago) {
+                $pago->update([
+                    'estado' => 'pagado',
+                    'estado_pago' => 'paid',
+                ]);
+
+                // Marcar todas sus cuotas como pagadas
+                $pago->cuotas()->update([
+                    'estado' => 'pagado',
+                    'fecha_pago' => Carbon::today(),
+                ]);
+
+                Log::info('Pago y cuotas marcados como pagados', [
+                    'pago_id' => $pago->id,
+                    'payment_number' => $paymentNumber,
                 ]);
 
                 return $this->pagoFacilService->getCallbackResponse();
             }
 
-            // Actualizar estado del pago según el resultado
-            $estadoAnterior = $pago->estado_pago;
-            $pago->estado_pago = $result['status'];
-            $pago->save();
-
-            Log::info('Estado de pago actualizado', [
-                'pago_id' => $pago->id,
-                'transaction_id' => $result['transactionId'],
-                'estado_anterior' => $estadoAnterior,
-                'estado_nuevo' => $result['status'],
-                'mensaje' => $result['message'],
+            Log::error('No se encontró ni pago ni cuota con payment_number', [
+                'payment_number' => $paymentNumber,
             ]);
 
-            // Responder a PagoFácil con el formato esperado
             return $this->pagoFacilService->getCallbackResponse();
 
         } catch (\Exception $e) {
@@ -74,7 +110,6 @@ class PagoFacilWebhookController extends Controller
                 'payload' => $request->all(),
             ]);
 
-            // Siempre responder con formato correcto a PagoFácil
             return $this->pagoFacilService->getCallbackResponse();
         }
     }

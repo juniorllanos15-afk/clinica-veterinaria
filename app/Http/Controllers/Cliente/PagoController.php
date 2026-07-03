@@ -17,4 +17,14 @@ class PagoController extends Controller
             ->paginate(15);
         return Inertia::render('Cliente/Pagos/Index', compact('pagos'));
     }
+
+    public function show(Pago $pago)
+    {
+        $mascotaIds = Mascota::where('dueno_id', Auth::id())->pluck('id');
+        $pago->load('consulta.mascota', 'cuotas');
+        if (!$pago->consulta || !in_array($pago->consulta->mascota_id, $mascotaIds->toArray())) {
+            abort(404);
+        }
+        return Inertia::render('Cliente/Pagos/Show', compact('pago'));
+    }
 }

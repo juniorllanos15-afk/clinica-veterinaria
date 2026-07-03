@@ -19,6 +19,7 @@
                   <th class="table-header-cell">Veterinario</th>
                   <th class="table-header-cell">Motivo</th>
                   <th class="table-header-cell">Estado</th>
+                  <th class="table-header-cell">Acción</th>
                 </tr>
               </thead>
               <tbody class="table-body">
@@ -31,6 +32,11 @@
                     <Badge :variant="getEstadoVariant(consulta.estado)">
                       {{ capitalizeFirst(consulta.estado) }}
                     </Badge>
+                  </td>
+                  <td class="table-cell">
+                    <Link :href="route('cliente.consultas.show', consulta.id)">
+                      <Button variant="primary" size="sm">Ver</Button>
+                    </Link>
                   </td>
                 </tr>
               </tbody>
@@ -50,6 +56,7 @@
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Badge from '@/Components/UI/Badge.vue';
+import Button from '@/Components/UI/Button.vue';
 import Card from '@/Components/UI/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
 

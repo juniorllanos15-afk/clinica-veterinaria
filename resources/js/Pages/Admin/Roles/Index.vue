@@ -59,7 +59,7 @@ defineProps<{
 
 const getRolVariant = (nombre: string) => {
   const variants = {
-    'administrador': 'error',
+    'propietario': 'error',
     'veterinario': 'info',
     'cliente': 'success'
   };
